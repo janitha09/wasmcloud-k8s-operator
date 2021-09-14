@@ -79,8 +79,10 @@ func main() {
 	}
 
 	if err = (&controllers.AppReconciler{
-		Client: mgr.GetClient(),
-		Scheme: mgr.GetScheme(),
+		Client:   mgr.GetClient(),
+		Scheme:   mgr.GetScheme(),
+		Log:      ctrl.Log.WithName("WasmCloudController").WithName("App"),
+		Recorder: mgr.GetEventRecorderFor("WasmCloudController"),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "App")
 		os.Exit(1)

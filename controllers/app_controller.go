@@ -19,10 +19,12 @@ package controllers
 import (
 	"context"
 
+	"github.com/go-logr/logr"
+	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/client-go/tools/record"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	wasmcloudcomv1alpha1 "wasmcloud-k8s-operator/app/api/v1alpha1"
 )
@@ -30,7 +32,9 @@ import (
 // AppReconciler reconciles a App object
 type AppReconciler struct {
 	client.Client
-	Scheme *runtime.Scheme
+	Scheme   *runtime.Scheme
+	Log      logr.Logger
+	Recorder record.EventRecorder
 }
 
 //+kubebuilder:rbac:groups=wasmcloud.com.wasmcloud-k8s-operator,resources=apps,verbs=get;list;watch;create;update;patch;delete
@@ -47,10 +51,17 @@ type AppReconciler struct {
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.9.2/pkg/reconcile
 func (r *AppReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	_ = log.FromContext(ctx)
+	log := r.Log.WithValues("WasmCloud", req.NamespacedName)
 
 	// your logic here
-
+	var application wasmcloudcomv1alpha1.App
+	log.Info("payload", "req", req)
+	if err := r.Get(ctx, req.NamespacedName, &application); err != nil {
+		if errors.IsNotFound(err) {
+			log.Info("The resource was probably deleted", "Request", req)
+		}
+	}
+	log.Info("application payload", "application", application)
 	return ctrl.Result{}, nil
 }
 
