@@ -1,9 +1,11 @@
-module wasmcloud-k8s-operator/app
+module github.com/wasmCloud/wasmcloud-k8s-operator
 
 go 1.16
 
 require (
 	github.com/go-logr/logr v0.4.0
+	github.com/nats-io/nats-server/v2 v2.5.0 // indirect
+	github.com/nats-io/nats.go v1.12.1
 	github.com/oam-dev/kubevela v1.1.0
 	github.com/onsi/ginkgo v1.16.4
 	github.com/onsi/gomega v1.14.0
